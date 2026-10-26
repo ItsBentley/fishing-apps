@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<main>
+<main id="page-capture">
   <a class="home-link" href="../">← All apps</a>
   <h1>Fish Weight Calculator</h1>
 
@@ -94,12 +94,16 @@
   </div>
 
   <button class="clear" id="clear" type="button">Clear scale reading</button>
+  <button class="btn" id="save-image" type="button" data-html2canvas-ignore aria-describedby="image-status">Save page as image</button>
+  <p class="hint" id="image-status" role="status" aria-live="polite" data-html2canvas-ignore></p>
 </main>
 
 <!-- Load shared helpers before the app logic that uses them. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="js/units.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/image-export.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
