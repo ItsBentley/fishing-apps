@@ -1,8 +1,6 @@
+/* Landing page layout and app-card styling. */
 body {
   min-height: 100%;
-}
-
-body {
   line-height: 1.5;
   padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
 }

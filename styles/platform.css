@@ -1,3 +1,4 @@
+/* Shared theme and base styles; load before each page's app-specific CSS. */
 :root {
   color-scheme: dark;
   --bg: #171c21;
@@ -41,4 +42,22 @@ main > h1::after {
   margin: 8px auto 0;
   background: var(--brand);
   border-radius: 999px;
+}
+
+.home-link {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--mute);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.home-link:hover {
+  color: var(--ink);
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
 }

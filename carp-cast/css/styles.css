@@ -23,18 +23,6 @@ main {
   padding: 20px 18px 40px;
 }
 
-.home-link {
-  display: inline-block;
-  margin-bottom: 8px;
-  color: var(--mute);
-  font-size: 0.9rem;
-  text-decoration: none;
-}
-
-.home-link:hover {
-  color: var(--ink);
-}
-
 .header-photo {
   display: block;
   width: 100%;
@@ -112,12 +100,6 @@ input {
 button {
   cursor: pointer;
   font-weight: 600;
-}
-
-input:focus-visible,
-button:focus-visible {
-  outline: 3px solid var(--brand);
-  outline-offset: 2px;
 }
 
 /* Main "Search" button */

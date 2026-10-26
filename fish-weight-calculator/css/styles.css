@@ -23,18 +23,6 @@ main {
   max-width: 440px;
 }
 
-.home-link {
-  display: inline-block;
-  margin-bottom: 8px;
-  color: var(--mute);
-  font-size: 0.9rem;
-  text-decoration: none;
-}
-
-.home-link:hover {
-  color: var(--ink);
-}
-
 /* The photo fills the content width and crops rather than distorts. */
 .scale-photo {
   display: block;
@@ -120,13 +108,6 @@ input {
 
 input.name {
   font-size: 1.1rem;
-}
-
-/* Keep keyboard focus clearly visible for keyboard users. */
-input:focus-visible,
-button:focus-visible {
-  outline: 3px solid var(--brand);
-  outline-offset: 2px;
 }
 
 /* ---------- Sling selection and saved-sling manager ---------- */

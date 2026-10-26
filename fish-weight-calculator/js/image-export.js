@@ -1,3 +1,4 @@
+// Capture the calculator as a PNG, then share it or download it as a fallback.
 async function savePageImage() {
   const button = $('save-image');
   const status = $('image-status');
