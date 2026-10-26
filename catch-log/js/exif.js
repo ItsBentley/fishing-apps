@@ -110,7 +110,7 @@ async function readPhotoMetadata(file) {
     const signedLon = gpsIfd.get(3) === 'W' ? -lon : lon;
     if (Number.isFinite(signedLat) && Number.isFinite(signedLon) &&
         Math.abs(signedLat) <= 90 && Math.abs(signedLon) <= 180) {
-      result.location = `${signedLat.toFixed(5)}, ${signedLon.toFixed(5)}`;
+      result.gps = { latitude: signedLat, longitude: signedLon };
     }
   }
   return result;

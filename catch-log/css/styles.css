@@ -32,6 +32,17 @@ main {
   font-size: 0.82rem;
 }
 
+.privacy-note {
+  margin: -4px 0 0;
+  color: var(--mute);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.privacy-note a {
+  color: var(--brand-text);
+}
+
 .panel {
   margin-bottom: 20px;
   padding: 16px;
@@ -61,6 +72,7 @@ fieldset {
 }
 
 label > input:not([type="checkbox"]),
+select,
 textarea {
   display: block;
   width: 100%;

@@ -3,11 +3,16 @@ const $ = (id) => document.getElementById(id);
 const MAX_PHOTO_FILE_BYTES = 20 * 1024 * 1024;
 const MAX_PHOTO_EDGE = 1600;
 const MAX_BACKUP_FILE_BYTES = 100 * 1024 * 1024;
+const GEOCODING_MIN_INTERVAL_MS = 1100;
 let currentPhoto = null;
 let pendingPhoto = null;
 let previewUrl = null;
 let photoLoadPromise = null;
 let photoRequest = 0;
+let locationEditedByUser = false;
+let geocodingQueue = Promise.resolve();
+let lastGeocodingRequestAt = 0;
+const geocodingCache = new Map();
 let catches = [];
 
 function localDateString(date) {
@@ -58,6 +63,76 @@ function formatWeight(weightLb) {
 function setStatus(element, message, isError) {
   element.textContent = message;
   element.classList.toggle('error', Boolean(isError));
+}
+
+function formatCoordinates(gps) {
+  return gps.latitude.toFixed(5) + ', ' + gps.longitude.toFixed(5);
+}
+
+function formatGeocodedLocation(result) {
+  const address = result.address || {};
+  const featureClass = result.class || result.category;
+  const featureName = ['leisure', 'natural', 'waterway', 'water', 'tourism', 'sport', 'man_made']
+    .includes(featureClass) && typeof result.name === 'string'
+    ? result.name
+    : '';
+  const locality = address.village || address.town || address.city || address.hamlet ||
+    address.municipality || address.suburb || address.city_district || address.county || '';
+  const region = address.county && address.county !== locality
+    ? address.county
+    : address.state && address.state !== locality ? address.state : '';
+  return [...new Set([featureName, locality, region].filter(Boolean))].slice(0, 3).join(', ');
+}
+
+function reverseGeocode(gps) {
+  const key = formatCoordinates(gps);
+  if (geocodingCache.has(key)) return geocodingCache.get(key);
+
+  const request = geocodingQueue.then(async () => {
+    const wait = Math.max(0, GEOCODING_MIN_INTERVAL_MS - (Date.now() - lastGeocodingRequestAt));
+    if (wait) await new Promise((resolve) => window.setTimeout(resolve, wait));
+    lastGeocodingRequestAt = Date.now();
+
+    const url = new URL('https://nominatim.openstreetmap.org/reverse');
+    url.search = new URLSearchParams({
+      lat: String(gps.latitude),
+      lon: String(gps.longitude),
+      format: 'jsonv2',
+      addressdetails: '1',
+      zoom: '13',
+      layer: 'address,poi,natural',
+      'accept-language': 'en-GB'
+    });
+    const response = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error('OpenStreetMap location lookup failed.');
+    const result = await response.json();
+    const location = formatGeocodedLocation(result);
+    if (!location) throw new Error('No nearby place name was found.');
+    return location;
+  });
+  geocodingQueue = request.catch(() => {});
+  geocodingCache.set(key, request);
+  request.catch(() => {
+    if (geocodingCache.get(key) === request) geocodingCache.delete(key);
+  });
+  return request;
+}
+
+function updateSpeciesOtherField() {
+  const isOther = $('species').value === '__other__';
+  $('species-other-row').hidden = !isOther;
+  $('species-other').required = isOther;
+  if (!isOther) $('species-other').value = '';
+}
+
+function selectSpecies(value) {
+  const matchingOption = Array.from($('species').options).find((option) =>
+    option.value && option.value !== '__other__' &&
+    option.value.toLocaleLowerCase() === value.toLocaleLowerCase()
+  );
+  $('species').value = matchingOption ? matchingOption.value : '__other__';
+  $('species-other').value = matchingOption ? '' : value;
+  updateSpeciesOtherField();
 }
 
 function fileToDataUrl(blob) {
@@ -134,6 +209,8 @@ function loadPhoto(file) {
 
 function resetForm() {
   $('catch-form').reset();
+  updateSpeciesOtherField();
+  locationEditedByUser = false;
   $('catch-id').value = '';
   $('caught-at').value = currentLocalDateTime();
   $('form-heading').textContent = 'Log a catch';
@@ -240,9 +317,10 @@ function renderCatches() {
 
 function editCatch(record) {
   $('catch-id').value = record.id;
-  $('species').value = record.species;
+  selectSpecies(record.species);
   $('caught-at').value = record.caughtAt;
   $('location').value = record.location;
+  locationEditedByUser = Boolean(record.location);
   $('weight-lb').value = record.weightLb === null ? '' : String(Math.floor(record.weightLb));
   $('weight-oz').value = record.weightLb === null ? '' : String(Math.round((record.weightLb % 1) * 160) / 10);
   $('notes').value = record.notes;
@@ -298,7 +376,7 @@ async function saveCatch(event) {
     const record = {
       id: previous ? previous.id : newCatchId(),
       createdAt: previous ? previous.createdAt : Date.now(),
-      species: $('species').value.trim(),
+      species: ($('species').value === '__other__' ? $('species-other').value : $('species').value).trim(),
       caughtAt: $('caught-at').value,
       location: $('location').value.trim(),
       weightLb: hasWeight ? pounds + ounces / 16 : null,
@@ -433,6 +511,10 @@ async function importBackup(file) {
 
 // Form actions save locally; backup controls are the only import/export path.
 $('catch-form').addEventListener('submit', saveCatch);
+$('species').addEventListener('change', updateSpeciesOtherField);
+$('location').addEventListener('input', () => {
+  locationEditedByUser = true;
+});
 $('cancel-edit').addEventListener('click', resetForm);
 $('photo').addEventListener('change', () => {
   const file = $('photo').files[0];
@@ -450,10 +532,39 @@ $('photo').addEventListener('change', () => {
     }).then((metadata) => {
       if (request !== photoRequest) return;
       if (metadata.caughtAt) $('caught-at').value = metadata.caughtAt;
-      if (metadata.location) $('location').value = metadata.location;
       const found = [];
       if (metadata.caughtAt) found.push('date and time');
-      if (metadata.location) found.push('GPS location');
+      if (metadata.gps && !locationEditedByUser) {
+        const coordinates = formatCoordinates(metadata.gps);
+        $('location').value = coordinates;
+        found.push('GPS coordinates');
+        setStatus(
+          $('form-status'),
+          'Photo ready. Looking up a place name with OpenStreetMap; the GPS coordinates are sent to that service.',
+          false
+        );
+        return reverseGeocode(metadata.gps).then((location) => {
+          if (request !== photoRequest) return;
+          if (!locationEditedByUser) $('location').value = location;
+          setStatus(
+            $('form-status'),
+            locationEditedByUser
+              ? 'Photo ready. Found ' + location + ' nearby; kept your location entry.'
+              : 'Photo ready. Added ' + (found.includes('date and time') ? 'date and time and ' : '') +
+                'nearby location: ' + location + '. Check or edit before saving.',
+            false
+          );
+        }).catch((error) => {
+          console.warn('Could not look up photo GPS location:', error);
+          if (request !== photoRequest) return;
+          setStatus(
+            $('form-status'),
+            'Photo ready. Could not look up a place name; GPS coordinates are shown instead. You can enter a location manually.',
+            false
+          );
+        });
+      }
+      if (metadata.gps) found.push('GPS location');
       setStatus(
         $('form-status'),
         found.length

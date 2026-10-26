@@ -35,15 +35,76 @@
           <input id="remove-photo" type="checkbox">
           Remove saved photo
         </label>
-        <p class="metadata-note">JPEG photo date, time, and GPS are read on this device when available. You can fill in or change missing details.</p>
+        <p class="metadata-note">Date, time and location are added from your photo when available. You can edit them.</p>
         <label>Date and time caught
           <input id="caught-at" name="caught-at" type="datetime-local" required>
         </label>
         <label>Location or venue <span class="optional">(optional)</span>
           <input id="location" name="location" type="text" maxlength="120" placeholder="Venue, swim, or photo GPS location">
         </label>
-        <label>Species
-          <input id="species" name="species" type="text" maxlength="60" placeholder="e.g. Common carp" required>
+        <label for="species">Species</label>
+        <select id="species" name="species" required>
+          <option value="" selected disabled>Choose a fish</option>
+          <optgroup label="Coarse and other commonly caught fish">
+            <option>Barbel</option>
+            <option>Bleak</option>
+            <option>Bream (Common)</option>
+            <option>Bream (Silver)</option>
+            <option>Bullhead</option>
+            <option>Carp (Common)</option>
+            <option>Carp (Mirror)</option>
+            <option>Carp (Leather)</option>
+            <option>Carp (F1)</option>
+            <option>Chub</option>
+            <option>Crucian carp</option>
+            <option>Dace</option>
+            <option>Eel (European)</option>
+            <option>Flounder</option>
+            <option>Gudgeon</option>
+            <option>Minnow</option>
+            <option>Perch</option>
+            <option>Pike</option>
+            <option>Roach</option>
+            <option>Rudd</option>
+            <option>Ruffe</option>
+            <option>Stone loach</option>
+            <option>Spined loach</option>
+            <option>Stickleback (Three-Spined)</option>
+            <option>Stickleback (Nine-Spined)</option>
+            <option>Tench</option>
+            <option>Zander</option>
+          </optgroup>
+          <optgroup label="Game and migratory fish">
+            <option>Atlantic salmon</option>
+            <option>Arctic char</option>
+            <option>Brook trout</option>
+            <option>Brown trout</option>
+            <option>Grayling</option>
+            <option>Rainbow trout</option>
+            <option>Sea trout</option>
+            <option>Allis shad</option>
+            <option>Twaite shad</option>
+            <option>European smelt</option>
+            <option>Brook lamprey</option>
+            <option>River lamprey</option>
+            <option>Sea lamprey</option>
+          </optgroup>
+          <optgroup label="Other native and introduced fish">
+            <option>Ide (Orfe)</option>
+            <option>Grass carp</option>
+            <option>Goldfish</option>
+            <option>Pollan</option>
+            <option>Powan (Schelly)</option>
+            <option>Pumpkinseed</option>
+            <option>Sunbleak</option>
+            <option>Topmouth gudgeon (Stone Moroko)</option>
+            <option>Vendace</option>
+            <option>Wels catfish</option>
+          </optgroup>
+          <option value="__other__">Other (Enter Manually)</option>
+        </select>
+        <label id="species-other-row" for="species-other" hidden>Enter species
+          <input id="species-other" name="species-other" type="text" maxlength="60" placeholder="Enter fish species">
         </label>
         <fieldset>
           <legend>Weight <span class="optional">(optional)</span></legend>
@@ -86,6 +147,8 @@
       </div>
       <p class="status" id="backup-status" role="status" aria-live="polite"></p>
     </section>
+
+    <p class="privacy-note">Photo GPS coordinates are sent to OpenStreetMap to find a nearby place name. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>.</p>
   </main>
 
   <script src="js/exif.js"></script>
