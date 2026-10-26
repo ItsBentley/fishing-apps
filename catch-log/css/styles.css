@@ -73,6 +73,14 @@ textarea {
   font: inherit;
 }
 
+label > input[type="datetime-local"] {
+  width: calc(100% - 26px);
+  min-width: 0;
+  box-sizing: content-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 input[type="file"] {
   padding: 8px;
   font-size: 0.8rem;
