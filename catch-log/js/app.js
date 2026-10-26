@@ -4,16 +4,23 @@ const MAX_PHOTO_FILE_BYTES = 20 * 1024 * 1024;
 const MAX_PHOTO_EDGE = 1600;
 const MAX_BACKUP_FILE_BYTES = 100 * 1024 * 1024;
 const GEOCODING_MIN_INTERVAL_MS = 1100;
+const LOCATION_SEARCH_DELAY_MS = 350;
 let currentPhoto = null;
 let pendingPhoto = null;
 let previewUrl = null;
 let photoLoadPromise = null;
 let photoRequest = 0;
 let locationEditedByUser = false;
+let locationSearchTimer = 0;
+let locationSearchRequest = 0;
+let locationSearchController = null;
+let locationSuggestions = [];
+let activeLocationSuggestion = -1;
 let geocodingQueue = Promise.resolve();
 let lastGeocodingRequestAt = 0;
 const geocodingCache = new Map();
 let catches = [];
+let savedVenues = [];
 
 function localDateString(date) {
   const year = date.getFullYear();
@@ -23,10 +30,12 @@ function localDateString(date) {
 }
 
 function normalizeCatch(record) {
+  const legacyVenue = !record.caughtAt && typeof record.venue === 'string' ? record.venue : '';
   return {
     ...record,
     caughtAt: record.caughtAt || (record.date ? record.date + 'T12:00' : ''),
-    location: record.location || record.venue || ''
+    venue: record.caughtAt ? record.venue || '' : '',
+    location: record.location || legacyVenue
   };
 }
 
@@ -82,6 +91,147 @@ function formatGeocodedLocation(result) {
     ? address.county
     : address.state && address.state !== locality ? address.state : '';
   return [...new Set([featureName, locality, region].filter(Boolean))].slice(0, 3).join(', ');
+}
+
+function formatPhotonLocation(feature) {
+  const place = feature.properties || {};
+  const street = [place.housenumber, place.street].filter(Boolean).join(' ');
+  const locality = place.city || place.town || place.village || place.locality;
+  const parts = [place.name, street, place.district, locality, place.county]
+    .filter((part) => typeof part === 'string' && part.trim());
+  return [...new Set(parts)].filter((part, index, all) =>
+    all.findIndex((candidate) => candidate.toLocaleLowerCase() === part.toLocaleLowerCase()) === index
+  ).join(', ');
+}
+
+function closeLocationSuggestions() {
+  $('location-suggestions').hidden = true;
+  $('location-suggestions').replaceChildren();
+  $('location').setAttribute('aria-expanded', 'false');
+  $('location').removeAttribute('aria-activedescendant');
+  locationSuggestions = [];
+  activeLocationSuggestion = -1;
+}
+
+function updateVenueOptions(venues) {
+  const options = new Map();
+  venues.forEach((venue) => {
+    const name = typeof venue === 'string' ? venue : venue.name;
+    if (typeof name === 'string' && name.trim()) {
+      const normalized = name.trim();
+      const key = normalized.toLocaleLowerCase();
+      const lastUsed = typeof venue === 'string' ? 0 : venue.lastUsed || 0;
+      if (!options.has(key) || options.get(key).lastUsed < lastUsed) {
+        options.set(key, { name: normalized, lastUsed });
+      }
+    }
+  });
+  const datalist = $('venue-options');
+  datalist.replaceChildren();
+  Array.from(options.values())
+    .sort((a, b) => b.lastUsed - a.lastUsed || a.name.localeCompare(b.name))
+    .forEach(({ name }) => {
+      const option = document.createElement('option');
+      option.value = name;
+      datalist.appendChild(option);
+    });
+}
+
+function selectLocationSuggestion(index) {
+  const suggestion = locationSuggestions[index];
+  if (!suggestion) return;
+  $('location').value = suggestion.label;
+  locationEditedByUser = true;
+  $('location-status').textContent = '';
+  closeLocationSuggestions();
+}
+
+function updateActiveLocationSuggestion(index) {
+  const options = $('location-suggestions').querySelectorAll('[role="option"]');
+  if (!options.length) return;
+  activeLocationSuggestion = (index + options.length) % options.length;
+  options.forEach((option, optionIndex) => {
+    const active = optionIndex === activeLocationSuggestion;
+    option.setAttribute('aria-selected', String(active));
+    if (active) {
+      $('location').setAttribute('aria-activedescendant', option.id);
+      option.scrollIntoView({ block: 'nearest' });
+    }
+  });
+}
+
+function renderLocationSuggestions(features) {
+  const list = $('location-suggestions');
+  list.replaceChildren();
+  const seenLabels = new Set();
+  locationSuggestions = features.map((feature) => ({
+    label: formatPhotonLocation(feature)
+  })).filter((suggestion) => {
+    const key = suggestion.label.toLocaleLowerCase();
+    if (!key || seenLabels.has(key)) return false;
+    seenLabels.add(key);
+    return true;
+  });
+  locationSuggestions.forEach((suggestion, index) => {
+    const option = document.createElement('li');
+    option.id = 'location-option-' + index;
+    option.setAttribute('role', 'option');
+    option.setAttribute('aria-selected', 'false');
+    option.textContent = suggestion.label;
+    option.addEventListener('mousedown', (event) => event.preventDefault());
+    option.addEventListener('click', () => selectLocationSuggestion(index));
+    list.appendChild(option);
+  });
+  list.hidden = locationSuggestions.length === 0;
+  $('location').setAttribute('aria-expanded', String(locationSuggestions.length > 0));
+  $('location-status').textContent = locationSuggestions.length
+    ? locationSuggestions.length + ' location suggestions available.'
+    : 'No matching places found.';
+}
+
+async function searchLocations(query, requestId) {
+  if (locationSearchController) locationSearchController.abort();
+  locationSearchController = new AbortController();
+  const controller = locationSearchController;
+  const url = new URL('https://photon.komoot.io/api/');
+  url.search = new URLSearchParams({
+    q: query,
+    limit: '6',
+    lang: 'en',
+    countrycode: 'GB'
+  });
+
+  try {
+    $('location-status').textContent = 'Searching places...';
+    const response = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: controller.signal
+    });
+    if (!response.ok) throw new Error('Location search failed.');
+    const result = await response.json();
+    if (requestId !== locationSearchRequest || query !== $('location').value.trim()) return;
+    renderLocationSuggestions(Array.isArray(result.features) ? result.features : []);
+  } catch (error) {
+    if (error.name === 'AbortError' || requestId !== locationSearchRequest) return;
+    console.error('Unable to search locations:', error);
+    closeLocationSuggestions();
+    $('location-status').textContent = 'Could not load location suggestions. You can still enter a location.';
+  }
+}
+
+function handleLocationInput() {
+  locationEditedByUser = true;
+  window.clearTimeout(locationSearchTimer);
+  const requestId = ++locationSearchRequest;
+  if (locationSearchController) locationSearchController.abort();
+  const query = $('location').value.trim();
+  closeLocationSuggestions();
+
+  if (query.length < 3) {
+    $('location-status').textContent = '';
+    return;
+  }
+  locationSearchTimer = window.setTimeout(() => searchLocations(query, requestId), LOCATION_SEARCH_DELAY_MS);
 }
 
 function reverseGeocode(gps) {
@@ -211,6 +361,11 @@ function resetForm() {
   $('catch-form').reset();
   updateSpeciesOtherField();
   locationEditedByUser = false;
+  window.clearTimeout(locationSearchTimer);
+  locationSearchRequest++;
+  if (locationSearchController) locationSearchController.abort();
+  closeLocationSuggestions();
+  $('location-status').textContent = '';
   $('catch-id').value = '';
   $('caught-at').value = currentLocalDateTime();
   $('form-heading').textContent = 'Log a catch';
@@ -273,10 +428,15 @@ function createCatchCard(record) {
   date.dateTime = record.caughtAt;
   date.textContent = formatDateTime(record.caughtAt);
   meta.appendChild(date);
-  if (record.location) {
+  if (record.venue) {
     const venue = document.createElement('span');
-    venue.textContent = record.location;
+    venue.textContent = record.venue;
     meta.appendChild(venue);
+  }
+  if (record.location) {
+    const location = document.createElement('span');
+    location.textContent = record.location;
+    meta.appendChild(location);
   }
   content.appendChild(meta);
 
@@ -316,9 +476,12 @@ function renderCatches() {
 }
 
 function editCatch(record) {
+  closeLocationSuggestions();
+  $('location-status').textContent = '';
   $('catch-id').value = record.id;
   selectSpecies(record.species);
   $('caught-at').value = record.caughtAt;
+  $('venue').value = record.venue;
   $('location').value = record.location;
   locationEditedByUser = Boolean(record.location);
   $('weight-lb').value = record.weightLb === null ? '' : String(Math.floor(record.weightLb));
@@ -378,6 +541,7 @@ async function saveCatch(event) {
       createdAt: previous ? previous.createdAt : Date.now(),
       species: ($('species').value === '__other__' ? $('species-other').value : $('species').value).trim(),
       caughtAt: $('caught-at').value,
+      venue: $('venue').value.trim(),
       location: $('location').value.trim(),
       weightLb: hasWeight ? pounds + ounces / 16 : null,
       notes: $('notes').value.trim(),
@@ -387,6 +551,8 @@ async function saveCatch(event) {
 
     await catchStore.save(record);
     catches = catches.filter((item) => item.id !== record.id).concat(record);
+    if (record.venue) savedVenues = savedVenues.concat({ name: record.venue, lastUsed: Date.now() });
+    updateVenueOptions(savedVenues);
     renderCatches();
     resetForm();
     setStatus(status, previous ? 'Catch updated.' : 'Catch saved on this device.', false);
@@ -402,6 +568,7 @@ async function exportBackup() {
   const status = $('backup-status');
   try {
     const records = await catchStore.readAll();
+    const venues = await catchStore.readVenues();
     const backupRecords = await Promise.all(records.map(async (storedRecord) => {
       const record = normalizeCatch(storedRecord);
       return {
@@ -409,6 +576,7 @@ async function exportBackup() {
         createdAt: record.createdAt,
         species: record.species,
         caughtAt: record.caughtAt,
+        venue: record.venue,
         location: record.location,
         weightLb: record.weightLb,
         notes: record.notes,
@@ -417,8 +585,9 @@ async function exportBackup() {
     }));
     const backup = {
       format: 'bentleys-catch-log',
-      version: 2,
+      version: 3,
       exportedAt: new Date().toISOString(),
+      venues: venues.map((venue) => venue.name),
       catches: backupRecords
     };
     const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
@@ -449,10 +618,15 @@ function validateBackupRecord(record, version) {
   const validDateTime = match &&
     Number(match[4]) < 24 && Number(match[5]) < 60 &&
     isValidDate(match[1], match[2], match[3]);
+  const validVenueAndLocation = version === 1
+    ? typeof record?.venue === 'string'
+    : version === 2
+      ? typeof record?.location === 'string'
+      : typeof record?.venue === 'string' && typeof record?.location === 'string';
   if (!record || typeof record.id !== 'string' || !record.id ||
       typeof record.species !== 'string' || !record.species.trim() ||
       !validDateTime ||
-      typeof (version === 1 ? record.venue : record.location) !== 'string' ||
+      !validVenueAndLocation ||
       typeof record.notes !== 'string' ||
       !(record.weightLb === null || (Number.isFinite(record.weightLb) && record.weightLb >= 0))) {
     throw new Error('The backup contains an invalid catch record.');
@@ -462,6 +636,7 @@ function validateBackupRecord(record, version) {
     createdAt: Number.isFinite(record.createdAt) ? record.createdAt : Date.now(),
     species: record.species.trim(),
     caughtAt,
+    venue: version === 3 ? record.venue.trim() : '',
     location: version === 1 ? record.venue : record.location,
     weightLb: record.weightLb,
     notes: record.notes,
@@ -490,14 +665,22 @@ async function importBackup(file) {
   try {
     const backup = JSON.parse(await readFileText(file));
     if (backup.format !== 'bentleys-catch-log' ||
-        ![1, 2].includes(backup.version) || !Array.isArray(backup.catches)) {
+        ![1, 2, 3].includes(backup.version) || !Array.isArray(backup.catches) ||
+        (backup.version === 3 && (!Array.isArray(backup.venues) ||
+          backup.venues.some((venue) => typeof venue !== 'string')))) {
       throw new Error('This file is not a supported Catch Log backup.');
     }
     const imported = backup.catches.map((record) => validateBackupRecord(record, backup.version));
+    const importedVenues = backup.version === 3 ? backup.venues : [];
     if (!window.confirm('Import ' + imported.length + ' catches? Matching records will be updated; other catches will be kept.')) return;
 
-    await catchStore.merge(imported);
+    await catchStore.merge(imported, importedVenues);
     catches = (await catchStore.readAll()).map(normalizeCatch);
+    savedVenues = savedVenues.concat(
+      importedVenues.map((name) => ({ name, lastUsed: Date.now() })),
+      imported.filter((record) => record.venue).map((record) => ({ name: record.venue, lastUsed: Date.now() }))
+    );
+    updateVenueOptions(savedVenues.concat(catches.map((record) => record.venue)));
     renderCatches();
     setStatus(status, imported.length + (imported.length === 1 ? ' catch imported.' : ' catches imported.') +
       (backup.version === 1 ? ' Older backup dates were imported at 12:00.' : ''), false);
@@ -512,8 +695,25 @@ async function importBackup(file) {
 // Form actions save locally; backup controls are the only import/export path.
 $('catch-form').addEventListener('submit', saveCatch);
 $('species').addEventListener('change', updateSpeciesOtherField);
-$('location').addEventListener('input', () => {
-  locationEditedByUser = true;
+$('location').addEventListener('input', handleLocationInput);
+$('location').addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowDown' && !$('location-suggestions').hidden) {
+    event.preventDefault();
+    updateActiveLocationSuggestion(activeLocationSuggestion + 1);
+  } else if (event.key === 'ArrowUp' && !$('location-suggestions').hidden) {
+    event.preventDefault();
+    updateActiveLocationSuggestion(activeLocationSuggestion < 0
+      ? locationSuggestions.length - 1
+      : activeLocationSuggestion - 1);
+  } else if (event.key === 'Enter' && activeLocationSuggestion >= 0) {
+    event.preventDefault();
+    selectLocationSuggestion(activeLocationSuggestion);
+  } else if (event.key === 'Escape') {
+    closeLocationSuggestions();
+  }
+});
+$('location').addEventListener('blur', () => {
+  window.setTimeout(closeLocationSuggestions, 150);
 });
 $('cancel-edit').addEventListener('click', resetForm);
 $('photo').addEventListener('change', () => {
@@ -601,10 +801,12 @@ $('import-backup').addEventListener('click', () => $('backup-file').click());
 $('backup-file').addEventListener('change', () => importBackup($('backup-file').files[0]));
 
 $('caught-at').value = currentLocalDateTime();
-catchStore.readAll().then((records) => {
+Promise.all([catchStore.readAll(), catchStore.readVenues()]).then(([records, venues]) => {
   catches = records.map(normalizeCatch);
+  savedVenues = venues;
+  updateVenueOptions(savedVenues.concat(catches.map((record) => record.venue)));
   renderCatches();
 }).catch((error) => {
   console.error('Unable to load catches:', error);
-  setStatus($('form-status'), 'Could not open saved catches. Check that this browser supports website data storage.', true);
+  setStatus($('form-status'), 'Could not open saved catches or venues. Check that this browser supports website data storage.', true);
 });

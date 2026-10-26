@@ -39,9 +39,30 @@
         <label>Date and time caught
           <input id="caught-at" name="caught-at" type="datetime-local" required>
         </label>
-        <label>Location or venue <span class="optional">(optional)</span>
-          <input id="location" name="location" type="text" maxlength="120" placeholder="Venue, swim, or photo GPS location">
-        </label>
+        <div class="field-group">
+          <label for="venue">Venue name <span class="optional">(optional)</span></label>
+          <input id="venue" name="venue" type="text" maxlength="120" placeholder="Enter or choose a saved venue" list="venue-options" autocomplete="off">
+          <datalist id="venue-options"></datalist>
+        </div>
+        <div class="field-group">
+          <label for="location">Location <span class="optional">(optional)</span></label>
+          <div class="location-search">
+            <input
+              id="location"
+              name="location"
+              type="text"
+              maxlength="120"
+              placeholder="Town, area, or nearby place"
+              autocomplete="off"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-controls="location-suggestions"
+              aria-expanded="false"
+            >
+            <ul id="location-suggestions" class="location-suggestions" role="listbox" aria-label="Location suggestions" hidden></ul>
+          </div>
+          <p id="location-status" class="location-status" role="status" aria-live="polite"></p>
+        </div>
         <label for="species">Species</label>
         <select id="species" name="species" required>
           <option value="" selected disabled>Choose a fish</option>
@@ -148,7 +169,7 @@
       <p class="status" id="backup-status" role="status" aria-live="polite"></p>
     </section>
 
-    <p class="privacy-note">Photo GPS coordinates are sent to OpenStreetMap to find a nearby place name. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>.</p>
+    <p class="privacy-note">Location searches send your text to <a href="https://photon.komoot.io/" target="_blank" rel="noopener noreferrer">Photon</a>, which uses OpenStreetMap data. Photo GPS is sent to OpenStreetMap for a place lookup. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>.</p>
   </main>
 
   <script src="js/exif.js"></script>

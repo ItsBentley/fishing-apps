@@ -64,6 +64,11 @@ form {
   margin-top: 14px;
 }
 
+.field-group {
+  display: grid;
+  gap: 5px;
+}
+
 label,
 fieldset {
   min-width: 0;
@@ -72,7 +77,6 @@ fieldset {
 }
 
 label > input:not([type="checkbox"]),
-select,
 textarea {
   display: block;
   width: 100%;
@@ -83,6 +87,61 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 10px;
   font: inherit;
+}
+
+.location-search {
+  position: relative;
+  min-width: 0;
+}
+
+.location-search input,
+#venue,
+select {
+  display: block;
+  width: 100%;
+  margin-top: 0;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+}
+
+.location-suggestions {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 30%);
+}
+
+.location-suggestions li {
+  padding: 10px;
+  color: var(--ink);
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.location-suggestions li[aria-selected="true"],
+.location-suggestions li:hover {
+  background: var(--line);
+}
+
+.location-status {
+  min-height: 0;
+  margin: 0;
+  color: var(--mute);
+  font-size: 0.78rem;
 }
 
 label > input[type="datetime-local"] {
