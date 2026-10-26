@@ -23,7 +23,7 @@ body {
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 main > h1 {
