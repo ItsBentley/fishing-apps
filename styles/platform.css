@@ -1,0 +1,44 @@
+:root {
+  color-scheme: dark;
+  --bg: #171c21;
+  --card: #232a31;
+  --ink: #f1f4f6;
+  --mute: #b0bdc6;
+  --line: #3b4852;
+  --brand: #006a9f;
+  --brand-hover: #087ead;
+  --brand-text: #65c8ef;
+  --on-brand: #fff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+main > h1 {
+  margin: 4px 0 16px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+main > h1::after {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 4px;
+  margin: 8px auto 0;
+  background: var(--brand);
+  border-radius: 999px;
+}

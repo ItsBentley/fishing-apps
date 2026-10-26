@@ -1,17 +1,8 @@
-/* Theme tokens keep the single dark color scheme consistent. */
+/* App-specific theme tokens. */
 :root {
-  --bg: #171c21;
-  --card: #232a31;
-  --ink: #f1f4f6;
-  --mute: #b0bdc6;
-  --line: #3b4852;
-  --accent: #006a9f;
-  --on: #fff;
   --warn: #f08a74;
-  color-scheme: dark;
 
   /* Safe-area spacing protects content on notched phones. */
-  box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -21,13 +12,7 @@ html {
   scroll-padding-top: env(safe-area-inset-top, 0px);
 }
 
-* { box-sizing: border-box; }
-
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
   display: flex;
   justify-content: center;
   padding: 20px 16px 32px;
@@ -48,23 +33,6 @@ main {
 
 .home-link:hover {
   color: var(--ink);
-}
-
-h1 {
-  margin: 4px 0 16px;
-  font-size: 1.5rem;
-  font-weight: 800;
-  text-align: center;
-}
-
-h1::after {
-  content: "";
-  display: block;
-  width: 44px;
-  height: 4px;
-  margin: 8px auto 0;
-  background: var(--accent);
-  border-radius: 999px;
 }
 
 /* The photo fills the content width and crops rather than distorts. */
@@ -102,8 +70,8 @@ h1::after {
 }
 
 .seg button[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--on);
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 /* ---------- Input panels and fields ---------- */
@@ -157,7 +125,7 @@ input.name {
 /* Keep keyboard focus clearly visible for keyboard users. */
 input:focus-visible,
 button:focus-visible {
-  outline: 3px solid var(--accent);
+  outline: 3px solid var(--brand);
   outline-offset: 2px;
 }
 
@@ -181,9 +149,9 @@ button:focus-visible {
 }
 
 .chip[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--on);
-  border-color: var(--accent);
+  background: var(--brand);
+  color: var(--on-brand);
+  border-color: var(--brand);
 }
 
 .picked {
@@ -195,7 +163,7 @@ button:focus-visible {
 .link {
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--brand);
   font: inherit;
   font-weight: 600;
   padding: 8px 0 0;
@@ -243,8 +211,8 @@ button:focus-visible {
   margin-top: 12px;
   width: 100%;
   border: 0;
-  background: var(--accent);
-  color: var(--on);
+  background: var(--brand);
+  color: var(--on-brand);
   font: inherit;
   font-weight: 600;
   padding: 12px;
@@ -256,8 +224,8 @@ button:focus-visible {
   margin-top: 16px;
   padding: 22px 18px;
   border-radius: 16px;
-  background: var(--accent);
-  color: var(--on);
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 .result small {

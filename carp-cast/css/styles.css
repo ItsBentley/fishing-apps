@@ -2,36 +2,16 @@
    Carp Cast styles
    ========================================================================== */
 
-/* ---- Colours shared with Fish Weight Calculator ---- */
+/* ---- App-specific colours ---- */
 :root {
-  --bg: #171c21;
-  --ink: #f1f4f6;
-  --mute: #b0bdc6;
-  --card: #232a31;
-  --line: #3b4852;
-  --brand: #006a9f;
-  --brand-hover: #087ead;
   --score-slow: #ffffff;
   --score-fair: #ff756b;
   --score-good: #f0bd58;
   --score-great: #71cb91;
-  color-scheme: dark;
 }
 
 /* ---- Base page ---- */
-* {
-  box-sizing: border-box;
-}
-
-html,
 body {
-  margin: 0;
-}
-
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.4;
   /* Keeps content clear of the iPhone notch and home bar */
   padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
@@ -53,23 +33,6 @@ main {
 
 .home-link:hover {
   color: var(--ink);
-}
-
-h1 {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin: 4px 0 16px;
-  text-align: center;
-}
-
-h1::after {
-  content: "";
-  display: block;
-  width: 44px;
-  height: 4px;
-  margin: 8px auto 0;
-  background: var(--brand);
-  border-radius: 999px;
 }
 
 .header-photo {
@@ -160,7 +123,7 @@ button:focus-visible {
 /* Main "Search" button */
 button.go {
   background: var(--brand);
-  color: #ffffff;
+  color: var(--on-brand);
   border-color: var(--brand);
 }
 
@@ -234,7 +197,7 @@ button.go:hover {
 /* ---- "Best day" summary card ---- */
 .best {
   background: var(--brand);
-  color: #ffffff;
+  color: var(--on-brand);
   border-radius: 16px;
   padding: 18px;
   margin-bottom: 16px;
