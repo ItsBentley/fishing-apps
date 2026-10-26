@@ -135,7 +135,7 @@ function wireEvents() {
   $('u-kg').addEventListener('click', () => setUnit('kg'));
   $('manage').addEventListener('click', toggleManager);
   $('clear').addEventListener('click', clearReading);
-  $('save-image').addEventListener('click', savePageImage);
+  $('capture-page').addEventListener('click', capturePage);
 
   // Scale readings affect the result immediately.
   ['glb', 'goz', 'gkg'].forEach((id) => $(id).addEventListener('input', updateResult));

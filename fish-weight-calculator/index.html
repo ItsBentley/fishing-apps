@@ -94,17 +94,16 @@
   </div>
 
   <button class="clear" id="clear" type="button">Clear scale reading</button>
-  <button class="btn" id="save-image" type="button" data-html2canvas-ignore aria-describedby="image-status">Save page as image</button>
-  <p class="hint" id="image-status" role="status" aria-live="polite" data-html2canvas-ignore></p>
+  <button class="btn" id="capture-page" type="button" data-html2canvas-ignore aria-describedby="capture-status">Capture whole page</button>
+  <p class="hint" id="capture-status" role="status" aria-live="polite" data-html2canvas-ignore></p>
 </main>
 
 <!-- Load shared helpers before the app logic that uses them. -->
-<!-- html2canvas converts the calculator page into a PNG for sharing or download. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="js/units.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/ui.js"></script>
-<script src="js/image-export.js"></script>
+<script src="js/page-capture.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
