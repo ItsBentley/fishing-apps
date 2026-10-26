@@ -1,0 +1,477 @@
+/* ==========================================================================
+   Carp Cast styles
+   ========================================================================== */
+
+/* ---- Colours shared with Fish Weight Calculator ---- */
+:root {
+  --bg: #171c21;
+  --ink: #f1f4f6;
+  --mute: #b0bdc6;
+  --card: #232a31;
+  --line: #3b4852;
+  --brand: #006a9f;
+  --brand-hover: #087ead;
+  --score-slow: #ffffff;
+  --score-fair: #ff756b;
+  --score-good: #f0bd58;
+  --score-great: #71cb91;
+  color-scheme: dark;
+}
+
+/* ---- Base page ---- */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.4;
+  /* Keeps content clear of the iPhone notch and home bar */
+  padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+}
+
+main {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 20px 18px 40px;
+}
+
+.home-link {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--mute);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.home-link:hover {
+  color: var(--ink);
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 4px 0 16px;
+  text-align: center;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 4px;
+  margin: 8px auto 0;
+  background: var(--brand);
+  border-radius: 999px;
+}
+
+.header-photo {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  object-position: center;
+  margin: 0 auto 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+/* ---- Search form and buttons ---- */
+form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: flex-start;
+}
+
+.search-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+input,
+button {
+  font: inherit;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 11px;
+  color: var(--ink);
+  background: var(--card);
+}
+
+input {
+  width: 100%;
+  min-width: 0;
+}
+
+.suggestions {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 30%);
+}
+
+.suggestions li {
+  padding: 10px;
+  color: var(--ink);
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.suggestions li[aria-selected="true"],
+.suggestions li:hover {
+  background: var(--line);
+}
+
+.suggestions .suggestion-message {
+  color: var(--mute);
+  cursor: default;
+}
+
+button {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Main "Search" button */
+button.go {
+  background: var(--brand);
+  color: #ffffff;
+  border-color: var(--brand);
+}
+
+button.go:hover {
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+}
+
+.tools button:hover {
+  border-color: var(--brand);
+}
+
+/* "Use my location" and "Refresh" row */
+.tools {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tools button {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+/* Start date for the seven-day forecast window */
+.date-picker {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 14px;
+}
+
+.date-picker label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.date-picker small {
+  display: block;
+  margin-top: 5px;
+  color: var(--mute);
+  font-size: 0.78rem;
+}
+
+.date-picker input[type="date"] {
+  display: block;
+  /* Reserve room for padding and borders if Safari sizes the control as content-box. */
+  width: calc(100% - 24px);
+  min-width: 0;
+  box-sizing: content-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ---- Place name and status message ---- */
+#place {
+  font-weight: 800;
+  font-size: 1.2rem;
+  margin: 4px 0 2px;
+}
+
+#msg {
+  color: var(--mute);
+  font-size: 0.85rem;
+  margin: 0 0 12px;
+  min-height: 1.2em;
+}
+
+/* ---- "Best day" summary card ---- */
+.best {
+  background: var(--brand);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.best .big {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.best p {
+  margin: 4px 0 0;
+  opacity: 0.85;
+}
+
+.section-title {
+  margin: 20px 0 10px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* ---- Daily forecast cards ---- */
+.row {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+/* Highlights the best day */
+.row.top {
+  border-color: var(--brand);
+  border-width: 2px;
+}
+
+.forecast-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.forecast-main {
+  min-width: 0;
+}
+
+.day {
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.forecast-condition {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--ink);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.weather-icon,
+.moon-icon {
+  flex: 0 0 auto;
+  color: var(--mute);
+}
+
+.weather-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.moon-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.moon-value {
+  align-items: center;
+  gap: 6px;
+  font-size: 1.25rem;
+}
+
+.temperature,
+.rainfall {
+  color: var(--mute);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.temperature span {
+  color: var(--line);
+}
+
+.rainfall strong {
+  color: var(--ink);
+}
+
+/* Big score number on the right of each card */
+.sc {
+  flex: 0 0 auto;
+  min-width: 76px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.sc small {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 3px;
+  text-align: center;
+}
+
+.weather-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 18px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.metric {
+  min-width: 0;
+  padding: 0 10px;
+}
+
+.metric:first-child {
+  padding-left: 0;
+}
+
+.metric + .metric {
+  border-left: 1px solid var(--line);
+}
+
+.metric > span,
+.metric small,
+.fishing-advice span {
+  display: block;
+  color: var(--mute);
+  font-size: 0.78rem;
+}
+
+.metric > .metric-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pressure-icon,
+.metric-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.metric strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.wind-value {
+  align-items: center;
+  gap: 5px;
+}
+
+.metric strong.wind-value,
+.metric strong.moon-value {
+  display: flex;
+}
+
+.wind-arrow {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: var(--brand);
+}
+
+.metric small {
+  margin-top: 2px;
+}
+
+.sun-times {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  color: var(--mute);
+  font-size: 0.85rem;
+}
+
+.sun-times strong {
+  color: var(--ink);
+  margin-left: 4px;
+}
+
+.fishing-advice {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+
+.fishing-advice strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.9rem;
+}
+
+/* Score progress bar along the bottom of each card */
+.bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* ---- Footnote ---- */
+.note {
+  color: var(--mute);
+  font-size: 0.85rem;
+  margin-top: 14px;
+}

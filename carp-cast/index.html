@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Carp Cast</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main>
+    <a class="home-link" href="../">← All apps</a>
+    <h1>Carp Cast</h1>
+    <img
+      class="header-photo"
+      src="assets/carp-cast-lake.png"
+      alt="Angler fishing at a misty lake at dawn"
+      width="1152"
+      height="768"
+    >
+
+    <!-- Location search supports postcode/town entry and accessible town suggestions. -->
+    <form id="search-form">
+      <div class="search-field">
+        <input
+          id="search-input"
+          placeholder="Postcode or town"
+          autocomplete="off"
+          aria-label="Postcode or town"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-controls="search-suggestions"
+          aria-expanded="false"
+        >
+        <ul id="search-suggestions" class="suggestions" role="listbox" hidden></ul>
+      </div>
+      <button class="go" type="submit">Search</button>
+    </form>
+
+    <!-- Quick actions for GPS and refreshing the current forecast. -->
+    <div class="tools">
+      <button type="button" id="gps-btn">Use my location</button>
+      <button type="button" id="refresh-btn">Refresh</button>
+    </div>
+
+    <div class="date-picker">
+      <label for="start-date">First day of 7-day weather range</label>
+      <input id="start-date" type="date">
+      <small>Past dates use archived weather; recent dates may not be available yet.</small>
+    </div>
+
+    <!-- Current place and live loading/error/updated status. -->
+    <div id="place"></div>
+    <p id="msg"></p>
+
+    <!-- Best-scoring day summary, populated after the forecast loads. -->
+    <div class="best" id="best" hidden></div>
+
+    <h2 class="section-title">Weather</h2>
+
+    <!-- Daily forecast cards, populated by js/ui.js. -->
+    <div id="list"></div>
+
+    <p class="note">
+      Weather data from Open-Meteo. Pressure is sea-level mb, shown from 6am to 9pm each day.
+      The score weighs pressure trend most, then wind, sky, temperature and moon phase,
+      with a small penalty for very high or very low pressure. Suggested times compare
+      three-hour windows around dawn and dusk. The downwind bank is only a rule of thumb;
+      lake shape and accessible swims matter.
+    </p>
+  </main>
+
+  <!-- Load shared settings/helpers and data/scoring/UI before app startup. -->
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/location.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

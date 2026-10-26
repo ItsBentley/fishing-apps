@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Extend the layout into phone safe areas; CSS adds padding for notches and home bars. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Fish Weight Calculator</title>
+
+  <!-- Bricolage Grotesque is optional; the system font is used if it cannot load. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+  <a class="home-link" href="../">← All apps</a>
+  <h1>Fish Weight Calculator</h1>
+
+  <!-- Fishing scale photo; fixed display height and CSS cover keep its proportions. -->
+  <img
+    class="scale-photo"
+    src="assets/fish-scale.png"
+    alt="Digital fishing scale resting on a weigh sling"
+    width="1152"
+    height="768"
+    decoding="async"
+  >
+
+  <!-- Choose the units used by the calculator inputs and result. -->
+  <div class="seg" role="group" aria-label="Units">
+    <button id="u-lb" type="button" aria-pressed="true">lb &amp; oz</button>
+    <button id="u-kg" type="button" aria-pressed="false">kg</button>
+  </div>
+
+  <!-- Enter the combined fish and sling reading from the scale. -->
+  <section class="panel">
+    <h2>Weight on the scale (fish + sling)</h2>
+    <!-- JavaScript shows the fields matching the selected unit. -->
+    <div class="row lb">
+      <label>lb<input id="glb" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+      <label>oz<input id="goz" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+    </div>
+    <div class="row kg" hidden>
+      <label>kg<input id="gkg" type="number" inputmode="decimal" min="0" step="any" placeholder="0.000"></label>
+    </div>
+  </section>
+
+  <!-- Choose a saved sling or enter a custom sling weight to subtract. -->
+  <section class="panel">
+    <h2>Sling</h2>
+
+    <!-- JavaScript fills this group with Custom and saved sling buttons. -->
+    <div class="chips" id="chips" role="group" aria-label="Choose sling"></div>
+
+    <!-- Custom weight fields are shown when Custom is selected. -->
+    <div id="custom">
+      <div class="row lb">
+        <label>lb<input id="slb" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+        <label>oz<input id="soz" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+      </div>
+      <div class="row kg" hidden>
+        <label>kg<input id="skg" type="number" inputmode="decimal" min="0" step="any" placeholder="0.000"></label>
+      </div>
+    </div>
+
+    <!-- Displays the weight when a saved sling is selected. -->
+    <p class="picked" id="picked" hidden></p>
+
+    <button class="link" id="manage" type="button" aria-expanded="false">Edit saved slings</button>
+
+    <!-- Expandable list and form for managing saved sling weights. -->
+    <div id="mgr" hidden>
+      <div id="list"></div>
+
+      <div class="add">
+        <label>Name<input id="aname" class="name" type="text" maxlength="30" placeholder="e.g. Green sling"></label>
+        <div class="row lb spaced">
+          <label>lb<input id="alb" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+          <label>oz<input id="aoz" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+        </div>
+        <div class="row kg spaced" hidden>
+          <label>kg<input id="akg" type="number" inputmode="decimal" min="0" step="any" placeholder="0.000"></label>
+        </div>
+        <button class="btn" id="save" type="button">Save sling</button>
+        <p class="hint" id="msg" role="status"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live result: combined scale reading minus the selected sling weight. -->
+  <div class="result" aria-live="polite">
+    <small>Fish weight</small>
+    <div class="big" id="out">&ndash;</div>
+    <div class="alt" id="alt">Enter the scale reading to see the result.</div>
+  </div>
+
+  <button class="clear" id="clear" type="button">Clear scale reading</button>
+</main>
+
+<!-- Load shared helpers before the app logic that uses them. -->
+<script src="js/units.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
