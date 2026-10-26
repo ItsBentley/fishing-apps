@@ -4,7 +4,7 @@ A single GitHub Pages site for both fishing apps:
 
 - `/` — app landing page
 - `/carp-cast/` — Carp Cast weather and session planner
-- `/fish-weight-calculator/` — Fish Weight Calculator, with an option to capture the full calculator page as a PNG
+- `/fish-weight-calculator/` — Fish Weight Calculator
 
 Each app keeps its own HTML, app-specific CSS, JavaScript, and image assets so it can be updated independently. The shared `styles/platform.css` provides the common theme colors, typography, app-title style, and base styles; each page loads it before its own stylesheet. Add that shared stylesheet link when adding another app, then keep its layout and component styles in the app's own folder. The landing page and both app folders are deployed together by the GitHub Actions Pages workflow.
 
