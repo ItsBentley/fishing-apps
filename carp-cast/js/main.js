@@ -1,6 +1,5 @@
 var forecastRequest = 0;
 
-// Run the data pipeline: download -> summarise -> render, then report its status.
 async function loadForecast() {
   var request = ++forecastRequest;
   setPlace(state.location.name);
@@ -17,7 +16,6 @@ async function loadForecast() {
   }
 }
 
-// Default to today, while preventing future windows that exceed the API's range.
 var today = londonDateString(new Date());
 $("start-date").value = today;
 $("start-date").min = "1940-01-01";
@@ -30,7 +28,6 @@ var activeSuggestion = -1;
 var placeSuggestions = [];
 var selectedPlace = null;
 
-// Close suggestions and invalidate any search request that is still in flight.
 function hideSuggestions() {
   suggestionsRequest++;
   placeSuggestions = [];
@@ -53,7 +50,6 @@ function showSuggestionMessage(message) {
   activeSuggestion = -1;
 }
 
-// Build suggestion options with textContent to keep API text as plain text.
 function renderSuggestions(places) {
   var list = $("search-suggestions");
   placeSuggestions = places;
@@ -100,7 +96,6 @@ async function updateSuggestions(query) {
   showSuggestionMessage("Searching towns…");
   try {
     var places = await searchPlaces(normalized, 5);
-    // Ignore an older response if the user has typed or submitted a newer query.
     if (request !== suggestionsRequest || $("search-input").value.trim() !== normalized) return;
     if (places.length) {
       renderSuggestions(places);
@@ -115,7 +110,6 @@ async function updateSuggestions(query) {
   }
 }
 
-// Resolve a search or selected suggestion, switch location, and load weather.
 async function submitLocation(query, place) {
   clearTimeout(suggestionsTimer);
   showMessage("Finding " + query + "…");

@@ -1,15 +1,10 @@
-/* ==========================================================================
-   location.js: which place we are showing, and how it is chosen
-   ========================================================================== */
 
-// Current location, selection mode, and any GPS fallback note shown to the user.
 var state = {
   location: DEFAULT_LOCATION,
-  mode: "gps",     // "gps" = follow the device location, "manual" = typed place
-  gpsNote: ""      // small note added to the status message (e.g. location blocked)
+  mode: "gps",
+  gpsNote: ""
 };
 
-// Restore only valid saved values so stale or malformed storage cannot break startup.
 function restoreState() {
   try {
     var saved = JSON.parse(localStorage.getItem(STORAGE_KEYS.location) || "null");
@@ -19,10 +14,9 @@ function restoreState() {
     }
     var mode = localStorage.getItem(STORAGE_KEYS.mode);
     if (mode === "gps" || mode === "manual") state.mode = mode;
-  } catch (e) { /* storage unavailable: keep defaults */ }
+  } catch {}
 }
 
-// Select a location, persist it when storage is available, then reload the forecast.
 function setLocation(location, mode) {
   state.location = location;
   state.mode = mode || "manual";
@@ -30,11 +24,10 @@ function setLocation(location, mode) {
   try {
     localStorage.setItem(STORAGE_KEYS.location, JSON.stringify(location));
     localStorage.setItem(STORAGE_KEYS.mode, state.mode);
-  } catch (e) { /* storage unavailable: carry on without saving */ }
+  } catch {}
   loadForecast();
 }
 
-// Ask the browser for GPS. Automatic checks fall back to the saved/default location.
 var savedLocations = [];
 var savedLocationMap = null;
 var savedLocationMarker = null;
@@ -54,7 +47,7 @@ function restoreSavedLocations() {
 function persistSavedLocations() {
   try {
     localStorage.setItem(STORAGE_KEYS.savedLocations, JSON.stringify(savedLocations));
-  } catch (e) { /* storage unavailable */ }
+  } catch {}
 }
 
 function renderSavedLocations() {
@@ -150,12 +143,10 @@ function useDeviceLocation(auto) {
 
   showMessage("Getting your location…");
   navigator.geolocation.getCurrentPosition(
-    // Success: name the spot and show its forecast
     async function (pos) {
       var name = await nameForCoordinates(pos.coords.latitude, pos.coords.longitude);
       setLocation({ name: name, lat: pos.coords.latitude, lon: pos.coords.longitude }, "gps");
     },
-    // Blocked or failed
     function () {
       if (auto) {
         state.gpsNote = " · location blocked, showing " + state.location.name;

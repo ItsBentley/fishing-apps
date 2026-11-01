@@ -23,19 +23,11 @@
     decoding="async"
   >
 
-  <div class="seg" role="group" aria-label="Units">
-    <button id="u-lb" type="button" aria-pressed="true">lb &amp; oz</button>
-    <button id="u-kg" type="button" aria-pressed="false">kg</button>
-  </div>
-
   <section class="panel">
     <h2>Weight on the scale (fish + sling)</h2>
     <div class="row lb">
       <label>lb<input id="glb" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
       <label>oz<input id="goz" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
-    </div>
-    <div class="row kg" hidden>
-      <label>kg<input id="gkg" type="number" inputmode="decimal" min="0" step="any" placeholder="0.000"></label>
     </div>
   </section>
 
@@ -48,9 +40,6 @@
       <div class="row lb">
         <label>lb<input id="slb" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
         <label>oz<input id="soz" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
-      </div>
-      <div class="row kg" hidden>
-        <label>kg<input id="skg" type="number" inputmode="decimal" min="0" step="any" placeholder="0.000"></label>
       </div>
     </div>
 
@@ -66,9 +55,6 @@
         <div class="row lb spaced">
           <label>lb<input id="alb" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
           <label>oz<input id="aoz" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
-        </div>
-        <div class="row kg spaced" hidden>
-          <label>kg<input id="akg" type="number" inputmode="decimal" min="0" step="any" placeholder="0.000"></label>
         </div>
         <button class="btn" id="save" type="button">Save sling</button>
         <p class="hint" id="msg" role="status"></p>

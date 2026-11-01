@@ -1,8 +1,4 @@
-/* ==========================================================================
-   Carp Cast styles
-   ========================================================================== */
 
-/* ---- App-specific colours ---- */
 :root {
   --score-slow: #ffffff;
   --score-fair: #ff756b;
@@ -10,10 +6,8 @@
   --score-great: #71cb91;
 }
 
-/* ---- Base page ---- */
 body {
   line-height: 1.4;
-  /* Keeps content clear of the iPhone notch and home bar */
   padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
 }
 
@@ -34,7 +28,6 @@ main {
   border-radius: 14px;
 }
 
-/* ---- Search form and buttons ---- */
 form {
   display: flex;
   gap: 8px;
@@ -195,7 +188,6 @@ button {
   flex: 1;
 }
 
-/* Main "Search" button */
 button.go {
   background: var(--brand);
   color: var(--on-brand);
@@ -211,7 +203,6 @@ button.go:hover {
   border-color: var(--brand);
 }
 
-/* "Use my location" and "Refresh" row */
 .tools {
   display: flex;
   gap: 8px;
@@ -223,7 +214,6 @@ button.go:hover {
   font-size: 0.9rem;
 }
 
-/* Start date for the seven-day forecast window */
 .date-picker {
   display: block;
   width: 100%;
@@ -247,7 +237,6 @@ button.go:hover {
 
 .date-picker input[type="date"] {
   display: block;
-  /* Reserve room for padding and borders if Safari sizes the control as content-box. */
   width: calc(100% - 24px);
   min-width: 0;
   box-sizing: content-box;
@@ -255,7 +244,6 @@ button.go:hover {
   appearance: none;
 }
 
-/* ---- Place name and status message ---- */
 #place {
   font-weight: 800;
   font-size: 1.2rem;
@@ -269,7 +257,6 @@ button.go:hover {
   min-height: 1.2em;
 }
 
-/* ---- "Best day" summary card ---- */
 .best {
   background: var(--brand);
   color: var(--on-brand);
@@ -370,7 +357,6 @@ button.go:hover {
   font-weight: 700;
 }
 
-/* ---- Daily forecast cards ---- */
 .row {
   background: var(--card);
   border: 1px solid var(--line);
@@ -379,7 +365,6 @@ button.go:hover {
   margin-bottom: 10px;
 }
 
-/* Highlights the best day */
 .row.top {
   border-color: var(--brand);
   border-width: 2px;
@@ -455,7 +440,6 @@ button.go:hover {
   color: var(--ink);
 }
 
-/* Time-of-day scores */
 .period-scores {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -492,7 +476,6 @@ button.go:hover {
   font-size: 0.72rem;
 }
 
-/* Big score number on the right of each card */
 .sc {
   flex: 0 0 auto;
   min-width: 76px;
@@ -735,7 +718,6 @@ button.go:hover {
 .rain-chart {
   width: 100%;
   min-width: 0;
-  /* Viewport fallback, then container units for narrower forecast cards. */
   height: clamp(88px, 18vw, 150px);
   height: clamp(88px, 18cqw, 150px);
   display: flex;
@@ -822,7 +804,6 @@ button.go:hover {
   font-size: 18px;
 }
 
-/* Score progress bar along the bottom of each card */
 .bar {
   height: 6px;
   border-radius: 3px;
@@ -837,7 +818,6 @@ button.go:hover {
   border-radius: 3px;
 }
 
-/* ---- Footnote ---- */
 .note {
   color: var(--mute);
   font-size: 0.85rem;

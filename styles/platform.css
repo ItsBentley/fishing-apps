@@ -1,4 +1,3 @@
-/* Shared theme and base styles. Load before each app-specific stylesheet. */
 :root {
   color-scheme: dark;
   --bg: #171c21;

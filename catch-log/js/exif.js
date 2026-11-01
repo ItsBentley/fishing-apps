@@ -1,4 +1,3 @@
-/* Read EXIF capture time and GPS coordinates locally from JPEG photos. */
 async function readPhotoMetadata(file) {
   if (!file || !/jpe?g$/i.test(file.name) && !/^image\/jpeg$/i.test(file.type)) return {};
 

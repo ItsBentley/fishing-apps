@@ -313,7 +313,6 @@ function dataUrlToBlob(dataUrl) {
   return new Blob([array], { type: header.slice(5, header.indexOf(';')) });
 }
 
-// Resize uploaded photos before storing them to limit browser storage use.
 function loadPhoto(file) {
   if (!file) return Promise.resolve(null);
   if (!file.type.startsWith('image/')) return Promise.reject(new Error('Choose an image file.'));
@@ -381,7 +380,6 @@ function resetForm() {
   photoRequest++;
 }
 
-// Revoke the previous preview URL whenever a different photo is displayed.
 function showPhotoPreview(blob) {
   if (previewUrl) URL.revokeObjectURL(previewUrl);
   previewUrl = URL.createObjectURL(blob);
@@ -467,7 +465,6 @@ function createCatchCard(record) {
 function renderCatches() {
   const list = $('catch-list');
   list.replaceChildren();
-  // Keep future catches visible without losing the order they were entered.
   const sorted = catches.slice().sort((a, b) => b.caughtAt.localeCompare(a.caughtAt) || b.createdAt - a.createdAt);
   sorted.forEach((record) => list.appendChild(createCatchCard(record)));
   $('catch-count').textContent = catches.length + (catches.length === 1 ? ' catch' : ' catches');
@@ -691,7 +688,6 @@ async function importBackup(file) {
   }
 }
 
-// Form actions save locally; backup controls are the only import/export path.
 $('catch-form').addEventListener('submit', saveCatch);
 $('species').addEventListener('change', updateSpeciesOtherField);
 $('location').addEventListener('input', handleLocationInput);

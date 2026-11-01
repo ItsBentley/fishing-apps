@@ -1,4 +1,3 @@
-/* Keep records and photo blobs in a site-local database; no catch data is sent to a server. */
 const catchStore = (() => {
   const DATABASE_NAME = 'bentleys-catch-log';
   const STORE_NAME = 'catches';

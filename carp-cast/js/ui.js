@@ -1,6 +1,3 @@
-/* ==========================================================================
-   ui.js: everything that draws on the page
-   ========================================================================== */
 
 function setPlace(name) {
   $("place").textContent = name;
@@ -53,7 +50,6 @@ function moonIcon(phase) {
 
 function windArrow(degrees) {
   if (!Number.isFinite(degrees)) return "";
-  // Meteorological directions point toward where wind comes from; rotate to downwind.
   var downwindDegrees = (degrees + 180) % 360;
   return '<svg class="wind-arrow" viewBox="0 0 24 24" aria-label="Arrow points downwind" ' +
     'style="transform:rotate(' + downwindDegrees + 'deg)" fill="none" stroke="currentColor" ' +

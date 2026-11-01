@@ -1,18 +1,16 @@
-// Calculate the lunar score locally from the selected date.
 function moonInfo(dateString) {
-  var synodic = 29.530588853;                 // days in a lunar cycle
+  var synodic = 29.530588853;
   var knownNewMoon = Date.UTC(2000, 0, 6, 18, 14);
   var time = new Date(dateString + "T12:00:00Z").getTime();
   var age = (((time - knownNewMoon) / 86400000) % synodic + synodic) % synodic;
 
-  // Days away from the nearest new or full moon
   var distance = Math.min(age, Math.abs(age - synodic / 2), synodic - age);
 
   var names = ["New moon", "Waxing crescent", "First quarter", "Waxing gibbous",
                "Full moon", "Waning gibbous", "Last quarter", "Waning crescent"];
   return {
     name: names[Math.round(age / synodic * 8) % 8],
-    points: 3 + 12 * Math.max(0, 1 - distance / 7.4)   // best near new/full moon
+    points: 3 + 12 * Math.max(0, 1 - distance / 7.4)
   };
 }
 
@@ -26,16 +24,14 @@ function tempPoints(celsius) {
   return 4;
 }
 
-// Slowly falling is best, steady is good, fast rises and crashes are poor.
-// A penalty applies when pressure is very high (1025+) or very low (1000-).
 function pressurePoints(ratePerHour, averageMb) {
   var points =
-    ratePerHour <= -1   ? 10 :   // falling fast
-    ratePerHour <= -0.5 ? 22 :   // falling quickly
-    ratePerHour <= -0.1 ? 40 :   // falling slowly (best)
-    ratePerHour < 0.15  ? 30 :   // steady
-    ratePerHour < 0.5   ? 20 :   // rising slowly
-                           6;    // rising fast
+    ratePerHour <= -1   ? 10 :
+    ratePerHour <= -0.5 ? 22 :
+    ratePerHour <= -0.1 ? 40 :
+    ratePerHour < 0.15  ? 30 :
+    ratePerHour < 0.5   ? 20 :
+                           6;
   if (averageMb >= 1025 || averageMb <= 1000) points -= 8;
   return Math.max(points, 0);
 }
@@ -62,7 +58,6 @@ function meanWindDirection(degrees) {
   });
   if (!validDirections.length) return null;
 
-  // Average unit vectors so directions around 0°/360° average toward north.
   var radians = validDirections.map(function (direction) {
     return direction * Math.PI / 180;
   });
@@ -84,7 +79,6 @@ function verdict(score) {
 }
 
 function scoreConditions(wind, rain, cloud, temperature, rate, pressure, moonPoints) {
-  // Non-pressure factors are scaled to 60 points; pressure supplies the other 40.
   var base = windPoints(wind) + skyInfo(rain, cloud)[1] +
     tempPoints(temperature) + moonPoints;
   return Math.round(base * 60 / 70 + pressurePoints(rate, pressure));
@@ -102,7 +96,6 @@ function scoreFishingWindow(hours, anchor, beforeMinutes, afterMinutes, name, mo
   var anchorMinutes = Number(anchorParts[0]) * 60 + Number(anchorParts[1]);
   var start = anchorMinutes - beforeMinutes;
   var end = anchorMinutes + afterMinutes;
-  // Compare hourly forecasts in the three-hour dawn/dusk window; reject partial windows.
   var windowHours = hours.filter(function (hour) {
     var time = hour.hr * 60;
     return time >= start && time <= end;
@@ -131,7 +124,6 @@ function scoreFishingWindow(hours, anchor, beforeMinutes, afterMinutes, name, mo
 }
 
 function bestFishingWindow(day, moonPoints) {
-  // Use the same scoring model to choose between the dawn and dusk windows.
   var dawn = scoreFishingWindow(day.hours, day.sunrise, 60, 120, "Dawn", moonPoints);
   var dusk = scoreFishingWindow(day.hours, day.sunset, 120, 60, "Dusk", moonPoints);
   if (!dawn) return dusk;
@@ -175,7 +167,6 @@ function summariseDay(day) {
   var high = -Infinity;
   var low = Infinity;
 
-  // Aggregate the daily metrics in one pass instead of repeatedly filtering the hours.
   hours.forEach(function (hour) {
     if (!foundPressureStart && hour.hr === PRESSURE_START_HOUR) {
       first = hour;
@@ -216,7 +207,6 @@ function summariseDay(day) {
   }).filter(function (period) { return period !== null; });
 
   var score = scoreConditions(wind, rain, cloud, (hi + lo) / 2, rate, (p0 + p1) / 2, moon.points);
-  // Wind directions describe where wind comes from; the opposite points downwind.
   var bankDirection = fishingWindow && Number.isFinite(fishingWindow.windDirection)
     ? compassDirection((fishingWindow.windDirection + 180) % 360)
     : null;

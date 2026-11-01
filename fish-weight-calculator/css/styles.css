@@ -1,13 +1,10 @@
-/* App-specific theme tokens. */
 :root {
   --warn: #f08a74;
 
-  /* Safe-area spacing protects content on notched phones. */
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* ---------- Page layout and heading ---------- */
 html {
   scroll-padding-top: env(safe-area-inset-top, 0px);
 }
@@ -23,7 +20,6 @@ main {
   max-width: 440px;
 }
 
-/* The photo fills the content width and crops rather than distorts. */
 .scale-photo {
   display: block;
   width: 100%;
@@ -35,34 +31,6 @@ main {
   border-radius: 14px;
 }
 
-/* ---------- Unit selection ---------- */
-.seg {
-  display: flex;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 4px;
-  margin-bottom: 16px;
-}
-
-.seg button {
-  flex: 1;
-  border: 0;
-  background: none;
-  color: var(--mute);
-  font: inherit;
-  font-weight: 600;
-  padding: 10px;
-  border-radius: 9px;
-  cursor: pointer;
-}
-
-.seg button[aria-pressed="true"] {
-  background: var(--brand);
-  color: var(--on-brand);
-}
-
-/* ---------- Input panels and fields ---------- */
 .panel {
   background: var(--card);
   border: 1px solid var(--line);
@@ -110,7 +78,6 @@ input.name {
   font-size: 1.1rem;
 }
 
-/* ---------- Sling selection and saved-sling manager ---------- */
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -180,14 +147,12 @@ input.name {
   cursor: pointer;
 }
 
-/* Visually separates the new-sling form from saved sling rows. */
 .add {
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--line);
 }
 
-/* ---------- Result and actions ---------- */
 .btn {
   margin-top: 12px;
   width: 100%;
@@ -240,7 +205,6 @@ input.name {
   cursor: pointer;
 }
 
-/* Status text is muted normally and highlighted when it reports an error. */
 .hint {
   margin: 10px 2px 0;
   color: var(--mute);
@@ -252,7 +216,6 @@ input.name {
   font-weight: 600;
 }
 
-/* Ensure the HTML hidden attribute cannot be overridden by component styles. */
 [hidden] {
   display: none !important;
 }
