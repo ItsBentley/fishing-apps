@@ -27,3 +27,10 @@ var PRESSURE_END_HOUR = 21;
 // Daylight hours used to summarise daily wind, cloud and rainfall.
 var DAYTIME_START_HOUR = 6;
 var DAYTIME_END_HOUR = 20;
+
+// Time-of-day score periods.
+var SCORE_PERIODS = [
+  { name: "Morning", start: 6, end: 12 },
+  { name: "Afternoon", start: 12, end: 18 },
+  { name: "Evening", start: 18, end: 22 }
+];

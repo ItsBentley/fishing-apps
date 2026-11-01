@@ -150,6 +150,28 @@ function bestFishingWindow(day, moonPoints) {
   return dawn.score >= dusk.score ? dawn : dusk;
 }
 
+function summarisePeriod(hours, period, moonPoints) {
+  var periodHours = hours.filter(function (hour) {
+    return hour.hr >= period.start && hour.hr < period.end;
+  });
+  if (periodHours.length < 2) return null;
+
+  var wind = mean(periodHours.map(function (hour) { return hour.w; }));
+  var rain = periodHours.reduce(function (sum, hour) { return sum + hour.r; }, 0);
+  var cloud = mean(periodHours.map(function (hour) { return hour.c; }));
+  var temperature = mean(periodHours.map(function (hour) { return hour.t; }));
+  var pressure = mean(periodHours.map(function (hour) { return hour.p; }));
+  var rate = (periodHours[periodHours.length - 1].p - periodHours[0].p) /
+    Math.max(1, periodHours[periodHours.length - 1].hr - periodHours[0].hr);
+
+  var sky = skyInfo(rain, cloud);
+  return {
+    name: period.name,
+    sky: sky[0],
+    score: scoreConditions(Math.round(wind), rain, cloud, temperature, rate, pressure, moonPoints)
+  };
+}
+
 // ---- Summarise one day of hourly data into a scored day ----
 function summariseDay(day) {
   var hours = day.hours;
@@ -201,6 +223,9 @@ function summariseDay(day) {
   var sky = skyInfo(rain, cloud);
   var moon = moonInfo(day.date);
   var fishingWindow = bestFishingWindow(day, moon.points);
+  var periods = SCORE_PERIODS.map(function (period) {
+    return summarisePeriod(hours, period, moon.points);
+  }).filter(function (period) { return period !== null; });
 
   var score = scoreConditions(wind, rain, cloud, (hi + lo) / 2, rate, (p0 + p1) / 2, moon.points);
   // Wind directions describe where wind comes from; the opposite points downwind.
@@ -221,6 +246,7 @@ function summariseDay(day) {
     sunrise: day.sunrise, sunset: day.sunset,
     fishingWindow: fishingWindow,
     bankDirection: bankDirection,
+    periods: periods,
     score: score
   };
 }

@@ -2,22 +2,18 @@
    ui.js: everything that draws on the page
    ========================================================================== */
 
-// Shows the place name above the forecast
 function setPlace(name) {
   $("place").textContent = name;
 }
 
-// Shows a status message (loading, errors, last updated)
 function showMessage(text) {
   $("msg").textContent = text;
 }
 
-// Score colours match the verdict bands
 function scoreColour(score) {
   return "var(--score-" + verdict(score).toLowerCase() + ")";
 }
 
-// Inline SVG keeps forecast icons crisp without extra image or icon dependencies.
 function weatherIcon(sky) {
   var icon = sky === "Clear"
     ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>'
@@ -82,19 +78,35 @@ function moonLabelIcon() {
     '<path d="M20.2 15.6A8.5 8.5 0 0 1 8.4 3.8 8.5 8.5 0 1 0 20.2 15.6Z"></path></svg>';
 }
 
-// Render a scored week. Forecast values are prepared by summariseDay before reaching here.
+function sunIcon(sunset) {
+  var arrow = sunset
+    ? '<path d="M27 3v7m0 0-2.5-2.5M27 10l2.5-2.5"></path>'
+    : '<path d="M27 10V3m0 0-2.5 2.5M27 3l2.5 2.5"></path>';
+  return '<svg class="sun-icon" viewBox="0 0 30 24" aria-hidden="true" fill="none" ' +
+    'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M5 16a7 7 0 0 1 14 0"></path><path d="M12 2v2M4.9 5.9l1.4 1.4M19.1 5.9l-1.4 1.4M2 16h20"></path>' + arrow + '</svg>';
+}
+
 function renderForecast(days) {
   var best = days.reduce(function (a, b) { return b.score > a.score ? b : a; });
+  var bestPeriod = best.periods && best.periods.length
+    ? best.periods.reduce(function (a, b) { return b.score > a.score ? b : a; })
+    : null;
 
-  // Best day summary
   $("best").hidden = false;
   $("best").innerHTML =
-    '<div>Best day in this range</div>' +
-    '<div class="big">' + best.label + '</div>' +
-    '<p>' + verdict(best.score) + ' (' + best.score + '/100) · pressure ' + best.trend +
-    ' at ' + best.p1 + ' mb, ' + best.sky.toLowerCase() + ', ' + best.hi + '°C</p>';
+    '<div class="best-heading">' +
+      '<div><div>Best day in this range</div><div class="big">' + best.label + '</div></div>' +
+      (bestPeriod ? '<div class="best-period-weather">' + weatherIcon(bestPeriod.sky) +
+        '<span><strong>' + bestPeriod.name + '</strong>' + bestPeriod.sky + '</span></div>' : '') +
+    '</div>' +
+    '<p class="best-details">' + verdict(best.score) + ' (' + best.score + '/100) · pressure ' + best.trend +
+    ' at ' + best.p1 + ' mb, ' + best.sky.toLowerCase() + ', ' + best.hi + '°C</p>' +
+    (bestPeriod ? '<div class="best-period-score">' +
+      '<div class="best-period-copy"><span>Best time</span><strong>' + bestPeriod.name + '</strong></div>' +
+      '<div class="best-period-number"><b>' + bestPeriod.score + '</b>' +
+      '<small>/100 · ' + verdict(bestPeriod.score) + '</small></div></div>' : '');
 
-  // Daily cards
   $("list").innerHTML = days.map(function (d) {
     var colour = scoreColour(d.score);
     var rainfall = d.rain >= 0.2
@@ -111,14 +123,19 @@ function renderForecast(days) {
       '<div class="forecast-header">' +
         '<div class="forecast-main">' +
           '<div class="day">' + d.label + '</div>' +
-          '<div class="forecast-condition">' + weatherIcon(d.sky) + d.sky + '</div>' +
           '<div class="temperature">High ' + d.hi + '° <span>·</span> Low ' + d.lo + '°C</div>' +
           rainfall +
         '</div>' +
-        '<div class="sc" style="color:' + colour + '">' +
-          d.score + '<small>' + verdict(d.score) + '</small>' +
+        '<div class="forecast-condition forecast-condition-right">' +
+          weatherIcon(d.sky) + d.sky +
         '</div>' +
       '</div>' +
+      '<div class="period-scores">' + d.periods.map(function (period) {
+        var periodColour = scoreColour(period.score);
+        return '<div class="period-score"><span>' + period.name + '</span>' +
+          '<strong style="color:' + periodColour + '">' + period.score + '</strong>' +
+          '<small>' + verdict(period.score) + '</small></div>';
+      }).join("") + '</div>' +
       '<div class="weather-metrics">' +
         '<div class="metric"><span class="metric-label">' + windIcon() +
           ' Wind</span><strong class="wind-value">' +
@@ -131,8 +148,10 @@ function renderForecast(days) {
           ' Moon phase</span><strong class="moon-value">' +
           moonIcon(d.moon) + d.moon + '</strong></div>' +
       '</div>' +
-      '<div class="sun-times"><span>Sunrise <strong>' + d.sunrise.slice(11, 16) +
-        '</strong></span><span>Sunset <strong>' + d.sunset.slice(11, 16) + '</strong></span></div>' +
+      '<div class="sun-times">' +
+        '<span>' + sunIcon(false) + '<span class="sun-time-label">Sunrise <strong>' + d.sunrise.slice(11, 16) + '</strong></span></span>' +
+        '<span>' + sunIcon(true) + '<span class="sun-time-label">Sunset <strong>' + d.sunset.slice(11, 16) + '</strong></span></span>' +
+      '</div>' +
       '<div class="fishing-advice">' +
         '<div><span>Best time</span><strong>' + fishingTime + '</strong></div>' +
         '<div><span>Bank to try</span><strong>' + bank + '</strong></div>' +

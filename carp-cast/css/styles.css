@@ -185,6 +185,13 @@ button.go:hover {
   margin-bottom: 16px;
 }
 
+.best-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .best .big {
   font-size: 2.6rem;
   font-weight: 800;
@@ -192,9 +199,76 @@ button.go:hover {
   line-height: 1.05;
 }
 
-.best p {
-  margin: 4px 0 0;
+.best-period-weather {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-align: right;
+}
+
+.best-period-weather span {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.best-period-weather strong {
+  font-size: 1rem;
+}
+
+.best .weather-icon {
+  order: 2;
+  width: 30px;
+  height: 30px;
+  color: inherit;
+}
+
+.best-details {
+  margin: 6px 0 12px;
   opacity: 0.85;
+}
+
+.best-period-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 58px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.best-period-copy,
+.best-period-number {
+  display: flex;
+  flex-direction: column;
+}
+
+.best-period-copy span {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+.best-period-copy strong {
+  margin-top: 2px;
+  font-size: 1.05rem;
+}
+
+.best-period-number {
+  align-items: flex-end;
+}
+
+.best-period-number b {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.best-period-number small {
+  margin-top: 3px;
+  white-space: nowrap;
+  opacity: 0.8;
 }
 
 .section-title {
@@ -244,6 +318,13 @@ button.go:hover {
   font-weight: 700;
 }
 
+.forecast-condition-right {
+  align-self: center;
+  margin-top: 0;
+  justify-content: flex-end;
+  text-align: right;
+}
+
 .weather-icon,
 .moon-icon {
   flex: 0 0 auto;
@@ -281,6 +362,43 @@ button.go:hover {
   color: var(--ink);
 }
 
+/* Time-of-day scores */
+.period-scores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.period-score {
+  text-align: center;
+  padding: 10px 6px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+
+.period-score span,
+.period-score small {
+  display: block;
+  color: var(--mute);
+}
+
+.period-score span {
+  font-size: 0.78rem;
+}
+
+.period-score strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 1.4rem;
+  line-height: 1.1;
+}
+
+.period-score small {
+  margin-top: 3px;
+  font-size: 0.72rem;
+}
+
 /* Big score number on the right of each card */
 .sc {
   flex: 0 0 auto;
@@ -311,6 +429,7 @@ button.go:hover {
 .metric {
   min-width: 0;
   padding: 0 10px;
+  text-align: center;
 }
 
 .metric:first-child {
@@ -332,6 +451,7 @@ button.go:hover {
 .metric > .metric-label {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
 }
 
@@ -357,6 +477,12 @@ button.go:hover {
 .metric strong.wind-value,
 .metric strong.moon-value {
   display: flex;
+  justify-content: center;
+  gap: 0;
+}
+
+.metric strong.moon-value .moon-icon {
+  margin-right: -4px;
 }
 
 .wind-arrow {
@@ -371,17 +497,37 @@ button.go:hover {
 }
 
 .sun-times {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
   padding: 12px 0;
   color: var(--mute);
   font-size: 0.85rem;
 }
 
+.sun-times > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.sun-time-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .sun-times strong {
   color: var(--ink);
-  margin-left: 4px;
+}
+
+.sun-icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  color: #d89b4a;
+  opacity: 0.95;
 }
 
 .fishing-advice {
@@ -397,6 +543,10 @@ button.go:hover {
   display: block;
   margin-top: 3px;
   font-size: 0.9rem;
+}
+
+.fishing-advice > div {
+  text-align: center;
 }
 
 /* Score progress bar along the bottom of each card */
