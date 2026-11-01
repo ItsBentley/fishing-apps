@@ -1,7 +1,3 @@
-/* ==========================================================================
-   main.js: app startup, forecast loading, and search/location event handlers
-   ========================================================================== */
-
 var forecastRequest = 0;
 
 // Run the data pipeline: download -> summarise -> render, then report its status.
@@ -133,7 +129,6 @@ async function submitLocation(query, place) {
   }
 }
 
-// ---- Search box: postcode or town ----
 $("search-form").onsubmit = async function (event) {
   event.preventDefault();
   var query = $("search-input").value.trim();
@@ -178,10 +173,8 @@ $("search-suggestions").onclick = function (event) {
   $("search-input").focus();
 };
 
-// ---- "Use my location" button ----
 $("gps-btn").onclick = function () { useDeviceLocation(false); };
 
-// ---- Saved locations and map picker ----
 $("saved-locations-btn").onclick = function () {
   renderSavedLocations();
   closeLocationPicker();
@@ -227,13 +220,11 @@ $("save-location-btn").onclick = function () {
   renderSavedLocations();
 };
 
-// ---- "Refresh" button: re-checks device location if that is the current mode ----
 $("refresh-btn").onclick = function () {
   if (state.mode === "gps") useDeviceLocation(true);
   else loadForecast();
 };
 
-// ---- Start-up: restore saved place, then follow the device location if allowed ----
 restoreState();
 if (state.mode === "gps") useDeviceLocation(true);
 else loadForecast();

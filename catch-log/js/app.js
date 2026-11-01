@@ -1,4 +1,3 @@
-/* Catch form, photo handling, on-device list, and backup import/export. */
 const $ = (id) => document.getElementById(id);
 const MAX_PHOTO_FILE_BYTES = 20 * 1024 * 1024;
 const MAX_PHOTO_EDGE = 1600;

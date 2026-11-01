@@ -1,10 +1,4 @@
-/* ==========================================================================
-   scoring.js: turns a day of weather into a 0-100 fishing score
-   Weighting: pressure trend 40, then wind 20, sky 20, temperature 15 and
-   moon 15 (those four are scaled down to fit the remaining 60).
-   ========================================================================== */
-
-// ---- Moon phase (calculated locally from the date; no API data needed) ----
+// Calculate the lunar score locally from the selected date.
 function moonInfo(dateString) {
   var synodic = 29.530588853;                 // days in a lunar cycle
   var knownNewMoon = Date.UTC(2000, 0, 6, 18, 14);
@@ -22,19 +16,16 @@ function moonInfo(dateString) {
   };
 }
 
-// ---- Wind (mph): light breeze scores best, calm and gales score worst ----
 function windPoints(mph) {
   return mph <= 2 ? 12 : mph <= 10 ? 20 : mph <= 15 ? 13 : mph <= 20 ? 7 : 2;
 }
 
-// ---- Temperature (C): mild is best ----
 function tempPoints(celsius) {
   if (celsius >= 10 && celsius <= 24) return 15;
   if ((celsius >= 4 && celsius < 10) || (celsius > 24 && celsius <= 29)) return 10;
   return 4;
 }
 
-// ---- Pressure: rate of change (mb per hour) matters most ----
 // Slowly falling is best, steady is good, fast rises and crashes are poor.
 // A penalty applies when pressure is very high (1025+) or very low (1000-).
 function pressurePoints(ratePerHour, averageMb) {
@@ -49,7 +40,6 @@ function pressurePoints(ratePerHour, averageMb) {
   return Math.max(points, 0);
 }
 
-// ---- Sky: returns [label, points] from rain (mm) and cloud cover (%) ----
 function skyInfo(rainMm, cloudPercent) {
   if (rainMm >= 6) return ["Wet", 6];
   if (rainMm >= 1.5) return ["Rain", 14];
@@ -58,7 +48,6 @@ function skyInfo(rainMm, cloudPercent) {
   return ["Cloudy", 20];
 }
 
-// ---- Labels ----
 function trendWord(ratePerHour) {
   if (ratePerHour <= -1) return "falling fast";
   if (ratePerHour <= -0.1) return "falling";
@@ -172,7 +161,6 @@ function summarisePeriod(hours, period, moonPoints) {
   };
 }
 
-// ---- Summarise one day of hourly data into a scored day ----
 function summariseDay(day) {
   var hours = day.hours;
   var first = hours[0];

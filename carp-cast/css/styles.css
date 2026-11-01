@@ -735,6 +735,7 @@ button.go:hover {
 .rain-chart {
   width: 100%;
   min-width: 0;
+  /* Viewport fallback, then container units for narrower forecast cards. */
   height: clamp(88px, 18vw, 150px);
   height: clamp(88px, 18cqw, 150px);
   display: flex;

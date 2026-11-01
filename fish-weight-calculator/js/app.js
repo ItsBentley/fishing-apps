@@ -1,8 +1,3 @@
-/* ==========================================================
-   Application state, weight calculations, user actions, and
-   event wiring. UI rendering helpers live in ui.js.
-   ========================================================== */
-
 /* The app keeps weights in pounds; custom fields retain the user's entries. */
 const state = {
   unit: 'lb', // Selected input and display units.
