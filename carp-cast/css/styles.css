@@ -549,6 +549,185 @@ button.go:hover {
   text-align: center;
 }
 
+.forecast-header {
+  cursor: pointer;
+}
+
+.forecast-details {
+  margin-top: 14px;
+}
+
+.forecast-details summary {
+  display: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.row {
+  cursor: pointer;
+}
+
+.row .forecast-details {
+  cursor: default;
+}
+
+.detail-content {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+
+.detail-section {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.detail-section h3 {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.hourly-list {
+  max-height: 280px;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hourly-list::-webkit-scrollbar {
+  display: none;
+}
+
+.hourly-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(52px, .8fr) repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.hourly-row strong,
+.hourly-row span:first-child {
+  text-align: left;
+}
+
+.hourly-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg);
+  color: var(--mute);
+  font-size: 0.72rem;
+}
+
+.rain-chart-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.rain-chart {
+  width: 100%;
+  min-width: 0;
+  height: clamp(88px, 18vw, 150px);
+  height: clamp(88px, 18cqw, 150px);
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+}
+
+.rain-chart-hour {
+  position: relative;
+  flex: 1;
+  min-width: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.rain-chart-bar {
+  position: absolute;
+  bottom: 18px;
+  left: 15%;
+  width: 70%;
+  max-width: 14px;
+}
+
+.rain-chart-bar span {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  font-size: 0.48rem;
+  line-height: 1;
+  transform: translate(-50%, -100%);
+  color: var(--mute);
+  white-space: nowrap;
+}
+
+.rain-chart-hour.show-rain-percent .rain-chart-bar span {
+  display: block;
+}
+
+.rain-chart-bar i {
+  width: 100%;
+  height: 100%;
+  min-width: 4px;
+  display: block;
+  border-radius: 3px 3px 0 0;
+  background: #59a9d8;
+  box-shadow: 0 0 0 1px rgba(89, 169, 216, 0.25);
+}
+
+.rain-chart-hour small {
+  position: absolute;
+  bottom: 0;
+  height: 18px;
+  font-size: 0;
+  color: var(--mute);
+}
+
+.rain-chart-hour.show-rain-time small {
+  font-size: 0.58rem;
+}
+
+.line-chart {
+  width: 100%;
+  height: 125px;
+  margin: 4px 0;
+  overflow: visible;
+  color: var(--brand);
+}
+
+.chart-grid-line {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.chart-axis-value,
+.chart-axis-label {
+  fill: var(--mute);
+  font-size: 16px;
+}
+
+.chart-axis-label {
+  font-size: 18px;
+}
+
 /* Score progress bar along the bottom of each card */
 .bar {
   height: 6px;

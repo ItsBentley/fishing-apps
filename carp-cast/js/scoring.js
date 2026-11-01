@@ -246,6 +246,7 @@ function summariseDay(day) {
     sunrise: day.sunrise, sunset: day.sunset,
     fishingWindow: fishingWindow,
     bankDirection: bankDirection,
+    hours: hours,
     periods: periods,
     score: score
   };

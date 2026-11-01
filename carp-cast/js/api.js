@@ -6,7 +6,7 @@
 
 var FORECAST_HOURLY_FIELDS = [
   "temperature_2m", "pressure_msl", "wind_speed_10m",
-  "wind_direction_10m", "cloud_cover", "precipitation"
+  "wind_direction_10m", "cloud_cover", "precipitation", "precipitation_probability"
 ];
 
 // Fetch JSON from a service and surface HTTP failures to the caller.
@@ -126,8 +126,9 @@ function groupWeatherByDay(forecast) {
     throw new Error("Weather data is incomplete");
   }
   FORECAST_HOURLY_FIELDS.forEach(function (field) {
-    if (!Array.isArray(h[field]) || h[field].length !== h.time.length ||
-        !h[field].every(Number.isFinite)) {
+    if (field !== "precipitation_probability" &&
+        (!Array.isArray(h[field]) || h[field].length !== h.time.length ||
+        !h[field].every(Number.isFinite))) {
       throw new Error("Weather data is incomplete");
     }
   });
@@ -148,7 +149,8 @@ function groupWeatherByDay(forecast) {
       w: h.wind_speed_10m[i],
       d: h.wind_direction_10m[i],
       c: h.cloud_cover[i],
-      r: h.precipitation[i]
+      r: h.precipitation[i],
+      rp: Array.isArray(h.precipitation_probability) ? h.precipitation_probability[i] : null
     });
   });
 
