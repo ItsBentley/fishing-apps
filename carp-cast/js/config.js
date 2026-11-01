@@ -12,7 +12,8 @@ var DEFAULT_LOCATION = {
 // localStorage keys for the last selected location and its GPS/manual mode.
 var STORAGE_KEYS = {
   location: "fwloc",
-  mode: "fwmode"   // "gps" = use device location, "manual" = use a typed place
+  mode: "fwmode",   // "gps" = use device location, "manual" = use a typed place
+  savedLocations: "carpCastSavedLocations"
 };
 
 // Forecast horizon returned by Open-Meteo.

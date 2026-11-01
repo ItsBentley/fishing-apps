@@ -181,6 +181,52 @@ $("search-suggestions").onclick = function (event) {
 // ---- "Use my location" button ----
 $("gps-btn").onclick = function () { useDeviceLocation(false); };
 
+// ---- Saved locations and map picker ----
+$("saved-locations-btn").onclick = function () {
+  renderSavedLocations();
+  closeLocationPicker();
+  $("locations-dialog").showModal();
+};
+
+$("close-locations-btn").onclick = function () { $("locations-dialog").close(); };
+$("locations-dialog").addEventListener("click", function (event) {
+  if (event.target === this) this.close();
+});
+$("add-location-btn").onclick = openLocationPicker;
+$("cancel-location-btn").onclick = closeLocationPicker;
+
+$("map-gps-btn").onclick = function () {
+  if (!navigator.geolocation) {
+    showMessage("Location isn’t available on this device.");
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(function (position) {
+    var lat = position.coords.latitude;
+    var lon = position.coords.longitude;
+    savedLocationMap.setView([lat, lon], 14);
+    setMapPin(lat, lon);
+  }, function () {
+    showMessage("Couldn’t get your GPS position. Check location permission or move the pin on the map.");
+  }, { timeout: 10000, maximumAge: 600000 });
+};
+
+$("save-location-btn").onclick = function () {
+  var name = $("location-name").value.trim();
+  if (!pendingSavedLocation) {
+    showMessage("Tap the map to choose a location first.");
+    return;
+  }
+  if (!name) {
+    showMessage("Give this location a name, such as Willow Lake.");
+    $("location-name").focus();
+    return;
+  }
+  savedLocations.push({ name: name, lat: pendingSavedLocation.lat, lon: pendingSavedLocation.lon });
+  persistSavedLocations();
+  closeLocationPicker();
+  renderSavedLocations();
+};
+
 // ---- "Refresh" button: re-checks device location if that is the current mode ----
 $("refresh-btn").onclick = function () {
   if (state.mode === "gps") useDeviceLocation(true);

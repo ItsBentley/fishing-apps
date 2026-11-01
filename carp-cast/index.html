@@ -6,6 +6,7 @@
   <title>Carp Cast</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;800&display=swap">
   <link rel="stylesheet" href="../styles/platform.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -41,8 +42,29 @@
     <!-- Quick actions for GPS and refreshing the current forecast. -->
     <div class="tools">
       <button type="button" id="gps-btn">Use my location</button>
+      <button type="button" id="saved-locations-btn">Saved locations</button>
       <button type="button" id="refresh-btn">Refresh</button>
     </div>
+
+    <dialog id="locations-dialog" class="locations-dialog">
+      <div class="dialog-header">
+        <h2>Saved locations</h2>
+        <button type="button" id="close-locations-btn" aria-label="Close saved locations">×</button>
+      </div>
+      <div id="saved-locations-list" class="saved-locations-list"></div>
+      <button type="button" id="add-location-btn" class="add-location-btn">Add a location on the map</button>
+
+      <div id="location-picker" class="location-picker" hidden>
+        <div id="location-map" aria-label="Map for choosing a saved location"></div>
+        <button type="button" id="map-gps-btn" class="map-gps-btn">Use my GPS position</button>
+        <label for="location-name">Location name</label>
+        <input id="location-name" placeholder="e.g. Willow Lake">
+        <div class="picker-actions">
+          <button type="button" id="cancel-location-btn">Cancel</button>
+          <button type="button" id="save-location-btn" class="go">Save location</button>
+        </div>
+      </div>
+    </dialog>
 
     <div class="date-picker">
       <label for="start-date">First day of 7-day weather range</label>
@@ -73,6 +95,7 @@
   </main>
 
   <!-- Load shared settings/helpers and data/scoring/UI before app startup. -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/api.js"></script>
