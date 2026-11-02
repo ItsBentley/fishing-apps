@@ -5,9 +5,28 @@ var FORECAST_HOURLY_FIELDS = [
 ];
 
 async function fetchJson(url, errorMessage) {
-  var response = await fetch(url);
-  if (!response.ok) throw new Error(errorMessage);
-  return response.json();
+  var attempts = 3;
+
+  for (var attempt = 0; attempt < attempts; attempt++) {
+    try {
+      var response = await fetch(url);
+      if (response.ok) return response.json();
+      if (response.status !== 429 && response.status !== 502 &&
+          response.status !== 503 && response.status !== 504) {
+        throw new Error(errorMessage);
+      }
+    } catch (error) {
+      if (error.message === errorMessage) throw error;
+    }
+
+    if (attempt < attempts - 1) {
+      await new Promise(function (resolve) {
+        setTimeout(resolve, 750 * Math.pow(2, attempt));
+      });
+    }
+  }
+
+  throw new Error(errorMessage + " (the service is temporarily unavailable)");
 }
 
 function placeName(place) {
